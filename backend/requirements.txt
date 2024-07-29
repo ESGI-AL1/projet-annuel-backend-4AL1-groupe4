@@ -10,3 +10,13 @@ psycopg2-binary
 python-dotenv
 django-rest-swagger
 Pillow
+boto3
+drf_yasg
+python-docx
+docx
+fpdf
+dj-database-url
+whitenoise[brotli]
+whitenoise
+gunicorn
+uvicorn

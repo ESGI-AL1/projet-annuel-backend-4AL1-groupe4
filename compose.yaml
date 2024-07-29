@@ -1,0 +1,49 @@
+services:
+  app:
+    build:
+      context: ./backend
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend/media/programs:/app/media/programs
+    depends_on:
+      db:
+        condition: service_healthy
+
+  nginx:
+    image: nginx
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+      - ./backend/media/programs:/app/media/programs
+      - ./certs:/etc/nginx/certs
+    ports:
+      - "80:80"
+      - "443:443"
+    depends_on:
+      - app
+
+  db:
+    image: postgres
+    restart: always
+    environment:
+      - POSTGRES_DB=dev-database
+      - POSTGRES_PASSWORD_FILE=/run/secrets/db-password
+    ports:
+      - "5432:5432"
+    expose:
+      - 5432
+    healthcheck:
+      test: ["CMD", "pg_isready"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    secrets:
+      - db-password
+
+volumes:
+  db-data:
+  programs-data:
+
+secrets:
+  db-password:
+    file: backend/db/password.txt
